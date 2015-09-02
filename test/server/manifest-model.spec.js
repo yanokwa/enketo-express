@@ -4,7 +4,7 @@
 // safer to ensure this here (in addition to grunt:env:test)
 process.env.NODE_ENV = 'test';
 
-var model = require( '../../app/models/manifest-model' ),
+var model = require( '../../app/models/cache-manifest-model' ),
     Q = require( "q" ),
     chai = require( "chai" ),
     expect = chai.expect;
