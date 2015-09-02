@@ -1,9 +1,10 @@
-"use strict";
+'use strict';
 
-var libxml = require( "libxmljs" );
+var libxml = require( 'libxmljs' );
 var url = require( 'url' );
 var path = require( 'path' );
 var fs = require( 'fs' );
+var appManifest = require( './app-manifest-model' );
 var Promise = require( 'q' ).Promise;
 var config = require( './config-model' ).server;
 var client = require( 'redis' ).createClient( config.redis.cache.port, config.redis.cache.host, {
@@ -194,7 +195,7 @@ function _removeNonExisting( resource ) {
     var rel = ( resource.indexOf( '/locales/' ) === 0 ) ? '../../' : '../../public',
         resourcePath = path.join( __dirname, rel, url.parse( resource ).pathname ),
         // TODO: in later versions of node.js, this should be replaced by: fs.accessSync(resourcePath, fs.R_OK)
-        exists = fs.existsSync( resourcePath );
+        exists = /manifest\.json$/.test( resource ) || fs.existsSync( resourcePath );
 
     if ( !exists ) {
         debug( 'cannot find', resourcePath );
@@ -221,7 +222,7 @@ function _calculateHash( html, resources ) {
 
     resources.forEach( function( resource ) {
         try {
-            content = _getResourceContent( resource );
+            content = ( /manifest\.json$/.test( resource ) ) ? appManifest.get() : _getResourceContent( resource );
             hash += utils.md5( content );
         } catch ( e ) {}
     } );
