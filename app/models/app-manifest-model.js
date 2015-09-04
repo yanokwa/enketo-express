@@ -40,4 +40,4 @@ function getManifest() {
 
 module.exports = {
     get: getManifest
-}
+};
