@@ -29,6 +29,7 @@ _setEmergencyHandlers();
 
 if ( settings.offline ) {
     console.debug( 'in offline mode' );
+    require( './module/worker-loader' );
     formCache.init( survey )
         .then( _swapTheme )
         .then( _init )
