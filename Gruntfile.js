@@ -1,6 +1,5 @@
 module.exports = grunt => {
     const JS_INCLUDE = [ '**/*.js', '!node_modules/**', '!test/**/*.spec.js', '!public/js/build/*' ];
-    const pkg = grunt.file.readJSON( 'package.json' );
     const path = require( 'path' );
     const nodeSass = require( 'node-sass' );
 
@@ -103,7 +102,10 @@ module.exports = grunt => {
             },
             'clean-js': {
                 command: 'rm -f public/js/build/* && rm -f public/js/*.js && rm -f public/temp-client-config.json'
-            }
+            },
+            rollup: {
+                command: 'npx rollup --config'
+            },
         },
         jsbeautifier: {
             test: {
@@ -149,6 +151,7 @@ module.exports = grunt => {
                 browsers: [ 'Chrome', 'ChromeCanary', 'Firefox', 'Opera' /*,'Safari'*/ ],
             }
         },
+        /*
         browserify: {
             development: {
                 files: {
@@ -183,6 +186,7 @@ module.exports = grunt => {
                 ]
             },
         },
+        */
         uglify: {
             all: {
                 files: {
@@ -260,8 +264,8 @@ module.exports = grunt => {
 
     grunt.registerTask( 'default', [ 'locales', 'widgets', 'css', 'js', 'uglify' ] );
     grunt.registerTask( 'locales', [ 'shell:clean-locales', 'i18next' ] );
-    grunt.registerTask( 'js', [ 'shell:clean-js', 'shell:ie11polyfill', 'client-config-file:create', 'widgets', 'browserify:production' ] );
-    grunt.registerTask( 'js-dev', [ 'client-config-file:create', 'widgets', 'browserify:development' ] );
+    grunt.registerTask( 'js', [ 'shell:clean-js', 'shell:ie11polyfill', 'client-config-file:create', 'widgets', 'shell:rollup' ] );
+    grunt.registerTask( 'js-dev', [ 'client-config-file:create', 'widgets', 'shell:rollup' ] );
     grunt.registerTask( 'css', [ 'shell:clean-css', 'system-sass-variables:create', 'sass' ] );
     grunt.registerTask( 'test', [ 'env:test', 'js', 'css', 'mochaTest:all', 'karma:headless', 'jsbeautifier:test', 'eslint' ] );
     grunt.registerTask( 'test-browser', [ 'env:test', 'css', 'client-config-file:create', 'karma:browsers' ] );
