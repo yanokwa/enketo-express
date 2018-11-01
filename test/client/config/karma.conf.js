@@ -45,10 +45,8 @@ module.exports = config => {
             plugins: [
                 resolve( {
                     module: true, // Default: true
-                    jsnext: true, // Default: false
                     main: true, // Default: true
                     browser: true, // Default: false
-                    extensions: [ '.js', '.json' ], // Default: [ '.mjs', '.js', '.json', '.node' ]
                 } ),
                 commonjs( {
                     include: 'node_modules/**', // Default: undefined

@@ -10,11 +10,6 @@ const parser = new DOMParser();
 
 let server;
 let blobEncoding;
-let propertyStore;
-let recordStore;
-let surveyStore;
-let dataStore;
-let dump;
 let available = false;
 const databaseName = 'enketo';
 
@@ -183,7 +178,7 @@ function _setBlobStorageEncoding() {
         } );
 }
 
-propertyStore = {
+const propertyStore = {
     get( name ) {
         return server.properties.get( name )
             .then( _firstItemOnly );
@@ -230,7 +225,7 @@ propertyStore = {
     }
 };
 
-surveyStore = {
+const surveyStore = {
     /** 
      * Obtains a single survey's form HTML and XML model, theme, external instances from storage
      * @param  {[type]} id [description]
@@ -375,7 +370,7 @@ surveyStore = {
     }
 };
 
-dataStore = {
+const dataStore = {
     /** 
      * Obtains the stored dynamic data belonging to a form.
      * 
@@ -412,7 +407,7 @@ dataStore = {
 };
 
 
-recordStore = {
+const recordStore = {
     /** 
      * Obtains a single record (XML + files)
      *
@@ -798,7 +793,7 @@ function _flushTable( table ) {
 }
 
 // debugging utilities: TODO: should move elsewhere or be turned into useful functions that return promises
-dump = {
+const dump = {
     resources() {
         server.resources
             .query()

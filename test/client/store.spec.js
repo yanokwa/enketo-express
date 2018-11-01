@@ -5,6 +5,11 @@ import store from '../../public/js/src/module/store';
 describe( 'Client Storage', () => {
     let resourceA, resourceB, fileA, fileB, recordA, recordB, surveyA;
 
+    before( done => {
+        store.init()
+            .then( () => done() );
+    } );
+
     beforeEach( () => {
         resourceA = {
             url: '/path/to/resource1',
@@ -52,18 +57,6 @@ describe( 'Client Storage', () => {
 
     it( 'library is loaded', () => {
         expect( typeof store ).to.equal( 'object' );
-    } );
-
-    it( 'IndexedDb is supported and writeable', done => {
-
-        // manually "fix" browsers in console if database schema has changed
-        // window.store = store; 
-
-        // In Safari the DB appears to be blocked. Occassionally all these tests pass.
-
-        store.flush()
-            .then( store.init )
-            .then( done, done );
     } );
 
     describe( 'storing settings and properties', () => {

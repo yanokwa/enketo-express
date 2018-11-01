@@ -19,7 +19,7 @@ block script
   if environment == 'production'
     script(src=`${basePath}/js/build/enketo-webform${suffix}-bundle.min.js`)
   else
-    script(src=`${basePath}/js/build/enketo-webform${suffix}-dev-bundle.js`)
+    script(src=`${basePath}/js/build/enketo-webform${suffix}-bundle.js`)
  
 block content
   include component/_notification
