@@ -1,8 +1,9 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
+const resolve = require( 'rollup-plugin-node-resolve' );
+const commonjs = require( 'rollup-plugin-commonjs' );
+const json = require( 'rollup-plugin-json' );
+const builtins = require( 'rollup-plugin-node-builtins' );
+const globals = require( 'rollup-plugin-node-globals' );
+const buildFiles = require( './buildFiles' );
 
 const plugins = [
     resolve( {
@@ -29,16 +30,11 @@ const onwarn = warning => {
     console.warn( `(!) ${warning.message}` );
 };
 
-const configs = Object.entries( {
-    'public/js/src/main-webform.js': 'public/js/build/enketo-webform-bundle.js',
-    'public/js/src/main-webform-edit.js': 'public/js/build/enketo-webform-edit-bundle.js',
-    'public/js/src/main-webform-view.js': 'public/js/build/enketo-webform-view-bundle.js',
-    'public/js/src/main-offline-fallback.js': 'public/js/build/enketo-offline-fallback-bundle.js'
-} ).map( entry => {
+const configs = buildFiles.entries.map( ( entryFile, i ) => {
     return {
-        input: entry[ 0 ],
+        input: entryFile,
         output: {
-            file: entry[ 1 ],
+            file: buildFiles.bundles[ i ],
             format: 'iife',
             strict: false, // due leaflet.draw issue https://github.com/Leaflet/Leaflet.draw/issues/898
         },
@@ -47,4 +43,4 @@ const configs = Object.entries( {
     };
 } );
 
-export default configs;
+module.exports = configs;

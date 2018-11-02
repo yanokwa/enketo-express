@@ -2,6 +2,7 @@ module.exports = grunt => {
     const JS_INCLUDE = [ '**/*.js', '!node_modules/**', '!test/**/*.spec.js', '!public/js/build/*' ];
     const path = require( 'path' );
     const nodeSass = require( 'node-sass' );
+    const bundles = require( './buildFiles' ).bundles;
 
     require( 'time-grunt' )( grunt );
     require( 'load-grunt-tasks' )( grunt );
@@ -110,18 +111,15 @@ module.exports = grunt => {
                 command: 'npx rollup --config'
             },
             babel: {
-                command: [
-                    'npx babel public/js/build/enketo-webform-bundle.js --out-file public/js/build/enketo-webform-ie11-temp-bundle.js',
-                    'npx babel public/js/build/enketo-webform-edit-bundle.js --out-file public/js/build/enketo-webform-edit-ie11-temp-bundle.js',
-                    'npx babel public/js/build/enketo-webform-view-bundle.js --out-file public/js/build/enketo-webform-view-ie11-temp-bundle.js',
-                    'npx babel public/js/build/enketo-offline-fallback-bundle.js --out-file public/js/build/enketo-offline-fall-back-ie11-temp-bundle.js',
-                ].join( '&&' )
+                command: bundles
+                    .map( bundle => `npx babel ${bundle} --out-file ${bundle.replace('-bundle.', '-ie11-temp-bundle.')}` )
+                    .join( '&&' )
             },
             browserify: {
-                command: [
-                    'npx browserify node_modules/enketo-core/src/js/workarounds-ie11.js public/js/build/enketo-webform-ie11-temp-bundle.js -o public/js/build/enketo-webform-ie11-bundle.js'
-
-                ].join( '&&' )
+                command: bundles
+                    .map( bundle => `npx browserify node_modules/enketo-core/src/js/workarounds-ie11.js ${bundle.replace('-bundle.', '-ie11-temp-bundle.')} -o ${bundle.replace('-bundle.', '-ie11-bundle.')}` )
+                    .concat( [ 'rm -f public/js/build/*ie11-temp-bundle.js' ] )
+                    .join( '&&' )
             }
         },
         jsbeautifier: {
@@ -170,12 +168,13 @@ module.exports = grunt => {
         },
         uglify: {
             all: {
-                files: {
-                    'public/js/build/enketo-webform-bundle.min.js': [ 'public/js/build/enketo-webform-bundle.js' ],
-                    'public/js/build/enketo-webform-edit-bundle.min.js': [ 'public/js/build/enketo-webform-edit-bundle.js' ],
-                    'public/js/build/enketo-webform-view-bundle.min.js': [ 'public/js/build/enketo-webform-view-bundle.js' ],
-                    'public/js/build/enketo-offline-fallback-bundle.min.js': [ 'public/js/build/enketo-offline-fallback-bundle.js' ],
-                },
+                files: bundles
+                    .concat( bundles.map( bundle => bundle.replace( '-bundle.', '-ie11-bundle.' ) ) )
+                    .map( bundle => [ bundle.replace( '.js', '.min.js' ), [ bundle ] ] )
+                    .reduce( ( o, [ key, value ] ) => {
+                        o[ key ] = value;
+                        return o;
+                    }, {} )
             },
         },
         env: {
@@ -251,7 +250,7 @@ module.exports = grunt => {
         grunt.log.writeln( `File ${WIDGETS_SASS} created` );
     } );
 
-    grunt.registerTask( 'default', [ 'locales', 'widgets', 'css', 'js', 'uglify' ] );
+    grunt.registerTask( 'default', [ 'locales', 'widgets', 'css', 'js-ie11', 'uglify' ] );
     grunt.registerTask( 'locales', [ 'shell:clean-locales', 'i18next' ] );
     grunt.registerTask( 'js', [ 'shell:clean-js', 'client-config-file:create', 'widgets', 'shell:rollup' ] );
     grunt.registerTask( 'js-dev', [ 'client-config-file:create', 'widgets', 'shell:rollup' ] );
