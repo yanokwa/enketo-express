@@ -92,7 +92,10 @@ module.exports = grunt => {
                 ].join( '&&' )
             },
             ie11polyfill: {
-                command: 'mkdir -p public/js/build && curl "https://cdn.polyfill.io/v2/polyfill.min.js?ua=ie%2F11.0.0&features=es2015%2Ces2016%2Ces2017%2Ces2018%2Cdefault-3.6%2Cfetch" -o "public/js/build/ie11-polyfill.min.js"',
+                command: [
+                    'mkdir -p public/js/build && curl "https://cdn.polyfill.io/v2/polyfill.js?ua=ie%2F11.0.0&features=es2015%2Ces2016%2Ces2017%2Ces2018%2Cdefault-3.6%2Cfetch" -o "public/js/build/ie11-polyfill.min.js"',
+                    'cp -f node_modules/enketo-core/src/js/obscure-ie11-polyfills.js public/js/build/obscure-ie11-polyfills.js'
+                ].join( '&&' )
             },
             'clean-css': {
                 command: 'rm -f public/css/*'
@@ -106,6 +109,20 @@ module.exports = grunt => {
             rollup: {
                 command: 'npx rollup --config'
             },
+            babel: {
+                command: [
+                    'npx babel public/js/build/enketo-webform-bundle.js --out-file public/js/build/enketo-webform-ie11-temp-bundle.js',
+                    'npx babel public/js/build/enketo-webform-edit-bundle.js --out-file public/js/build/enketo-webform-edit-ie11-temp-bundle.js',
+                    'npx babel public/js/build/enketo-webform-view-bundle.js --out-file public/js/build/enketo-webform-view-ie11-temp-bundle.js',
+                    'npx babel public/js/build/enketo-offline-fallback-bundle.js --out-file public/js/build/enketo-offline-fall-back-ie11-temp-bundle.js',
+                ].join( '&&' )
+            },
+            browserify: {
+                command: [
+                    'npx browserify node_modules/enketo-core/src/js/workarounds-ie11.js public/js/build/enketo-webform-ie11-temp-bundle.js -o public/js/build/enketo-webform-ie11-bundle.js'
+
+                ].join( '&&' )
+            }
         },
         jsbeautifier: {
             test: {
@@ -236,11 +253,13 @@ module.exports = grunt => {
 
     grunt.registerTask( 'default', [ 'locales', 'widgets', 'css', 'js', 'uglify' ] );
     grunt.registerTask( 'locales', [ 'shell:clean-locales', 'i18next' ] );
-    grunt.registerTask( 'js', [ 'shell:clean-js', 'shell:ie11polyfill', 'client-config-file:create', 'widgets', 'shell:rollup' ] );
+    grunt.registerTask( 'js', [ 'shell:clean-js', 'client-config-file:create', 'widgets', 'shell:rollup' ] );
     grunt.registerTask( 'js-dev', [ 'client-config-file:create', 'widgets', 'shell:rollup' ] );
+    grunt.registerTask( 'js-ie11', [ 'js', 'shell:ie11polyfill', 'shell:babel', 'shell:browserify' ] );
     grunt.registerTask( 'css', [ 'shell:clean-css', 'system-sass-variables:create', 'sass' ] );
     grunt.registerTask( 'test', [ 'env:test', 'js', 'css', 'mochaTest:all', 'karma:headless', 'jsbeautifier:test', 'eslint' ] );
     grunt.registerTask( 'test-browser', [ 'env:test', 'css', 'client-config-file:create', 'karma:browsers' ] );
-    grunt.registerTask( 'develop', [ 'env:develop', 'shell:ie11polyfill', 'i18next', 'js-dev', 'css', 'concurrent:develop' ] );
+    grunt.registerTask( 'develop', [ 'env:develop', 'i18next', 'js-dev', 'css', 'concurrent:develop' ] );
+    grunt.registerTask( 'develop-ie11', [ 'env:develop', 'i18next', 'js-ie11', 'css', 'concurrent:develop' ] );
     grunt.registerTask( 'test-and-build', [ 'env:test', 'mochaTest:all', 'karma:headless', 'env:production', 'default' ] );
 };

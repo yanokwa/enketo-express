@@ -8,7 +8,6 @@ import connection from './connection';
 import settings from './settings';
 import { Form } from 'enketo-core';
 import { updateDownloadLink } from 'enketo-core/src/js/utils';
-import 'enketo-core/src/js/workarounds-ie11';
 import fileManager from './file-manager';
 import { t } from './translator';
 import records from './records-queue';
