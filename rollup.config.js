@@ -1,6 +1,5 @@
 const resolve = require( 'rollup-plugin-node-resolve' );
 const commonjs = require( 'rollup-plugin-commonjs' );
-const json = require( 'rollup-plugin-json' );
 const builtins = require( 'rollup-plugin-node-builtins' );
 const globals = require( 'rollup-plugin-node-globals' );
 const buildFiles = require( './buildFiles' );
@@ -15,7 +14,6 @@ const plugins = [
         include: 'node_modules/**', // Default: undefined
         sourceMap: false, // Default: true
     } ),
-    json(),
     builtins(),
     globals(),
 ];

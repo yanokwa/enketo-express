@@ -52,7 +52,7 @@ module.exports = config => {
                     include: 'node_modules/**', // Default: undefined
                     sourceMap: false, // Default: true
                 } ),
-                json(),
+                json(), // used to import package.json in tests
                 builtins(),
                 globals(),
             ]

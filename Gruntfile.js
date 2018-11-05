@@ -203,10 +203,10 @@ module.exports = grunt => {
     } );
 
     grunt.registerTask( 'client-config-file', 'Temporary client-config file', task => {
-        const CLIENT_CONFIG_PATH = 'public/js/build/temp-client-config.json';
+        const CLIENT_CONFIG_PATH = 'public/js/build/client-config.js';
         if ( task === 'create' ) {
             const config = require( './app/models/config-model' );
-            grunt.file.write( CLIENT_CONFIG_PATH, JSON.stringify( config.client ) );
+            grunt.file.write( CLIENT_CONFIG_PATH, `export default ${JSON.stringify( config.client )};` );
             grunt.log.writeln( `File ${CLIENT_CONFIG_PATH} created` );
         } else if ( task === 'remove' ) {
             grunt.file.delete( CLIENT_CONFIG_PATH );
@@ -253,7 +253,7 @@ module.exports = grunt => {
     grunt.registerTask( 'default', [ 'locales', 'widgets', 'css', 'js-ie11', 'uglify' ] );
     grunt.registerTask( 'locales', [ 'shell:clean-locales', 'i18next' ] );
     grunt.registerTask( 'js', [ 'shell:clean-js', 'client-config-file:create', 'widgets', 'shell:rollup' ] );
-    grunt.registerTask( 'js-dev', [ 'client-config-file:create', 'widgets', 'shell:rollup' ] );
+    grunt.registerTask( 'js-dev', [ 'js' ] );
     grunt.registerTask( 'js-ie11', [ 'js', 'shell:ie11polyfill', 'shell:babel', 'shell:browserify' ] );
     grunt.registerTask( 'css', [ 'shell:clean-css', 'system-sass-variables:create', 'sass' ] );
     grunt.registerTask( 'test', [ 'env:test', 'js', 'css', 'mochaTest:all', 'karma:headless', 'jsbeautifier:test', 'eslint' ] );
