@@ -587,7 +587,7 @@ function _setEventHandlers() {
         $( this ).next( '.record-list__records__msg' ).toggle( 100 );
     } );
 
-    document.addEventListener( events.Progressupdate().type, event => {
+    document.addEventListener( events.ProgressUpdate().type, event => {
         if ( event.target.classList.contains( 'or' ) && formprogress && event.detail ) {
             formprogress.style.width = `${event.detail}%`;
         }
